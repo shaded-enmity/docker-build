@@ -1,0 +1,20 @@
+#!/bin/bash
+
+set -e
+
+git pull
+
+service docker start
+
+make
+
+service docker stop
+
+bundles/$(cat VERSION)/binary/docker -d -D --selinux-enabled &
+
+sleep 2
+
+echo "Executing: docker $@"
+bundles/$(cat VERSION)/binary/docker $@
+
+kill $(cat /var/run/docker.pid)
